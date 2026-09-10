@@ -47,20 +47,20 @@ Each problem provides context that the learner uses to create their own design.
 The application is intentionally implemented as a simple monolith. HTTP routes delegate to application use cases, which coordinate domain behavior, repositories, and evaluation. Infrastructure details such as PostgreSQL and evaluator implementations remain behind interfaces.
 
 ```mermaid
-flowchart TB
-    subgraph FE["🖥️ React Frontend"]
+flowchart LR
+    subgraph FE[React Frontend]
         F1[Problems]
         F2[Practice]
         F3[Feedback]
         F4[History]
     end
 
-    subgraph API["🚀 Express REST API"]
+    subgraph API[Express REST API]
         R1[Problem Routes]
         R2[Attempt Routes]
     end
 
-    subgraph APP["⚙️ Application Layer"]
+    subgraph APP[Application Layer]
         A1[CreateAttempt]
         A2[SubmitAttempt]
         A3[EvaluateSubmission]
@@ -68,29 +68,29 @@ flowchart TB
         A5[GetProblemHistory]
     end
 
-    subgraph DOM["🧠 Domain Layer"]
+    subgraph DOM[Domain Layer]
         D1[PracticeAttempt]
         D2[Submission]
         D3[Domain Rules]
         D4[State Transitions]
     end
 
-    subgraph EVAL["🎯 Evaluator"]
+    subgraph EVAL[Evaluator]
         E0{{Evaluator Interface}}
         E1[RuleBasedEvaluator]
-        E2["OpenAIEvaluator (optional)"]
+        E2[OpenAIEvaluator - optional]
         E0 --> E1
         E0 --> E2
     end
 
-    subgraph REPO["🗄️ Repository Interfaces"]
+    subgraph REPO[Repository Interfaces]
         RP1[ProblemRepository]
         RP2[AttemptRepository]
         RP3[SubmissionRepository]
         RP4[EvaluationRepository]
     end
 
-    subgraph DB["🐘 PostgreSQL"]
+    subgraph DB[PostgreSQL]
         DB1[(Problem)]
         DB2[(PracticeAttempt)]
         DB3[(Submission)]
@@ -98,28 +98,12 @@ flowchart TB
         DB5[(CriterionResult)]
     end
 
-    FE -- "HTTP / JSON" --> API
+    FE -- HTTP / JSON --> API
     API --> APP
     APP --> DOM
     APP --> EVAL
     DOM --> REPO
     REPO --> DB
-
-    classDef frontend fill:#4f46e5,stroke:#312e81,color:#fff,stroke-width:2px
-    classDef api fill:#0891b2,stroke:#164e63,color:#fff,stroke-width:2px
-    classDef app fill:#7c3aed,stroke:#4c1d95,color:#fff,stroke-width:2px
-    classDef domain fill:#059669,stroke:#064e3b,color:#fff,stroke-width:2px
-    classDef eval fill:#dc2626,stroke:#7f1d1d,color:#fff,stroke-width:2px
-    classDef repo fill:#d97706,stroke:#78350f,color:#fff,stroke-width:2px
-    classDef db fill:#334155,stroke:#0f172a,color:#fff,stroke-width:2px
-
-    class F1,F2,F3,F4 frontend
-    class R1,R2 api
-    class A1,A2,A3,A4,A5 app
-    class D1,D2,D3,D4 domain
-    class E0,E1,E2 eval
-    class RP1,RP2,RP3,RP4 repo
-    class DB1,DB2,DB3,DB4,DB5 db
 ```
 
 **Figure 1 — High-level architecture.** The MVP uses a simple layered monolith. HTTP routes delegate to application use cases, which coordinate domain behavior, repositories, and evaluation. Infrastructure details such as PostgreSQL and evaluator implementations remain behind interfaces.
@@ -163,36 +147,23 @@ Evaluators abstract submission evaluation.
 A learner selects a problem, creates an attempt, submits a structured LLD design, passes deterministic validation, receives structured evaluation feedback, and can review history or retry.
 
 ```mermaid
-flowchart TD
-    A([Select Problem]) --> B(["Start Attempt<br/><b>DRAFT</b>"])
-    B --> C["Design LLD Solution<br/>Requirements • Classes<br/>Relations • Trade-offs • Edge Cases"]
-    C -->|Submit| D{Deterministic<br/>Validation}
+flowchart LR
+    A([Select Problem]) --> B(["Start Attempt (DRAFT)"])
+    B --> C["Design LLD Solution:<br/>Requirements, Classes,<br/>Relations, Trade-offs, Edge Cases"]
+    C -->|Submit| D{Deterministic Validation}
     D -->|Invalid| X[Show validation errors]
     X -.retry.-> C
     D -->|Valid| E(["SUBMITTED"])
     E --> F{{Evaluator Interface}}
     F --> G1[RuleBasedEvaluator]
     F --> G2[OpenAIEvaluator]
-    G1 --> H["Structured Feedback<br/>Score • Evidence<br/>Concerns • Suggestions • Confidence"]
+    G1 --> H["Structured Feedback:<br/>Score, Evidence,<br/>Concerns, Suggestions, Confidence"]
     G2 --> H
     H --> I(["COMPLETED"])
     I --> J1[View Feedback]
     I --> J2[View History]
     I --> J3(["Retry"])
     J3 -.new attempt.-> B
-
-    classDef start fill:#16a34a,stroke:#14532d,color:#fff,stroke-width:2px
-    classDef process fill:#4f46e5,stroke:#312e81,color:#fff,stroke-width:2px
-    classDef decision fill:#d97706,stroke:#78350f,color:#fff,stroke-width:2px
-    classDef error fill:#dc2626,stroke:#7f1d1d,color:#fff,stroke-width:2px
-    classDef final fill:#0891b2,stroke:#164e63,color:#fff,stroke-width:2px
-
-    class A,B start
-    class C,H process
-    class D decision
-    class X error
-    class E,F,G1,G2 process
-    class I,J1,J2,J3 final
 ```
 
 **Figure 2 — Core practice loop.** A learner selects a problem, creates an attempt, submits a structured LLD design, passes deterministic validation, receives structured evaluation feedback, and can review history or retry.
@@ -233,31 +204,15 @@ An `OpenAIEvaluator` implementation is also kept behind the same evaluator inter
 Deterministic validation is separated from judgment-heavy evaluation. The evaluator is defined behind an interface so the practice flow does not depend directly on a particular evaluation strategy. The current MVP runs with the rule-based evaluator while the OpenAI evaluator remains an optional, not-currently-active implementation (see [`AI_USAGE.md`](./AI_USAGE.md) for why).
 
 ```mermaid
-flowchart TD
-    S(["Submission"]) --> V["SubmissionValidator<br/>Required fields<br/>Content constraints<br/>Input validation"]
+flowchart LR
+    S(["Submission"]) --> V["SubmissionValidator:<br/>Required fields,<br/>Content constraints,<br/>Input validation"]
     V -->|Valid submission| U["EvaluateSubmission<br/>Use Case"]
-    U --> EI{{"Evaluator Interface"}}
-    EI --> R1["RuleBasedEvaluator<br/>Deterministic / local"]
-    EI --> R2["OpenAIEvaluator<br/>LLM-based judgment"]
-    R1 --> RES["EvaluationResult<br/>Overall score • Summary<br/>Top improvements<br/>Criterion results: score,<br/>evidence, concern, suggestion,<br/>confidence"]
+    U --> EI{{Evaluator Interface}}
+    EI --> R1["RuleBasedEvaluator<br/>(deterministic / local)"]
+    EI --> R2["OpenAIEvaluator<br/>(LLM-based judgment)"]
+    R1 --> RES["EvaluationResult:<br/>Overall score, Summary,<br/>Top improvements,<br/>Criterion results"]
     R2 --> RES
     RES --> P[("Persist Evaluation")]
-
-    classDef input fill:#0891b2,stroke:#164e63,color:#fff,stroke-width:2px
-    classDef validate fill:#d97706,stroke:#78350f,color:#fff,stroke-width:2px
-    classDef usecase fill:#7c3aed,stroke:#4c1d95,color:#fff,stroke-width:2px
-    classDef iface fill:#334155,stroke:#0f172a,color:#fff,stroke-width:2px
-    classDef impl fill:#dc2626,stroke:#7f1d1d,color:#fff,stroke-width:2px
-    classDef result fill:#16a34a,stroke:#14532d,color:#fff,stroke-width:2px
-    classDef db fill:#475569,stroke:#0f172a,color:#fff,stroke-width:2px
-
-    class S input
-    class V validate
-    class U usecase
-    class EI iface
-    class R1,R2 impl
-    class RES result
-    class P db
 ```
 
 **Figure 5 — Evaluation architecture.** Deterministic validation is separated from judgment-heavy evaluation. The evaluator is defined behind an interface so the practice flow does not depend directly on a particular evaluation strategy. The current MVP can run with the rule-based evaluator while the OpenAI evaluator remains an optional implementation.
@@ -272,23 +227,13 @@ Attempt state transitions are enforced by the domain entity. Evaluation failures
 
 ```mermaid
 stateDiagram-v2
+    direction LR
     [*] --> DRAFT
     DRAFT --> SUBMITTED: Submit
     SUBMITTED --> EVALUATING: Start Evaluation
     EVALUATING --> COMPLETED: Success
     EVALUATING --> FAILED: Failure
-    COMPLETED --> DRAFT: Retry (new attempt,<br/>previousAttemptId set)
-
-    classDef draft fill:#64748b,color:#fff,stroke:#1e293b,stroke-width:2px
-    classDef active fill:#d97706,color:#fff,stroke:#78350f,stroke-width:2px
-    classDef success fill:#16a34a,color:#fff,stroke:#14532d,stroke-width:2px
-    classDef fail fill:#dc2626,color:#fff,stroke:#7f1d1d,stroke-width:2px
-
-    class DRAFT draft
-    class SUBMITTED active
-    class EVALUATING active
-    class COMPLETED success
-    class FAILED fail
+    COMPLETED --> DRAFT: Retry (new attempt with previousAttemptId set)
 ```
 
 **Figure 3 — Attempt lifecycle.** Attempt state transitions are enforced by the domain entity. Evaluation failures move the attempt to `FAILED`, while retry creates a new attempt linked to the previous attempt instead of mutating the original submission.
@@ -621,13 +566,11 @@ The practice flow is separated from the content format, allowing future diagram 
 
 ```mermaid
 flowchart LR
-    subgraph CURRENT["Current"]
-        direction TB
+    subgraph CURRENT[Current]
         C1[Practice Flow] --> C2[Submission] --> C3["Text-based LLD Design"] --> C4[Evaluation]
     end
 
-    subgraph FUTURE["Future"]
-        direction TB
+    subgraph FUTURE[Future]
         F1[Practice Flow] --> F2{Submission Format}
         F2 --> F3[TextSubmission]
         F2 --> F4[DiagramSubmission]
@@ -636,11 +579,6 @@ flowchart LR
         F4 --> F6
         F5 --> F6
     end
-
-    classDef cur fill:#64748b,stroke:#1e293b,color:#fff,stroke-width:2px
-    classDef fut fill:#4f46e5,stroke:#312e81,color:#fff,stroke-width:2px
-    class C1,C2,C3,C4 cur
-    class F1,F2,F3,F4,F5,F6 fut
 ```
 
 **Change Test A — Submission format extensibility.** The practice flow is separated from the content format, allowing future diagram or code submissions without rewriting the core attempt lifecycle.
@@ -650,20 +588,12 @@ flowchart LR
 Evaluation strategy can change independently of the practice flow. A rule-based evaluator can be replaced or complemented by an LLM or human evaluator through the evaluator interface.
 
 ```mermaid
-flowchart TD
+flowchart LR
     P[Practice Flow] --> E[EvaluateSubmission]
     E --> I{{Evaluator Interface}}
     I --> R[Rule-Based Evaluator]
     I --> O[OpenAI Evaluator]
     I --> H[Human Evaluator]
-
-    classDef flow fill:#0891b2,stroke:#164e63,color:#fff,stroke-width:2px
-    classDef iface fill:#334155,stroke:#0f172a,color:#fff,stroke-width:2px
-    classDef impl fill:#7c3aed,stroke:#4c1d95,color:#fff,stroke-width:2px
-
-    class P,E flow
-    class I iface
-    class R,O,H impl
 ```
 
 **Change Test B — Evaluator extensibility.** Evaluation strategy can change independently of the practice flow. A rule-based evaluator can be replaced or complemented by an LLM or human evaluator through the evaluator interface.
