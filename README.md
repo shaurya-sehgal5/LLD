@@ -649,6 +649,7 @@ Attempt #1      6.8 / 10
 
 ```text
 lld-practice-platform/
+├── screenshots/
 ├── apps/
 │   ├── api/
 │   │   ├── src/
@@ -658,13 +659,11 @@ lld-practice-platform/
 │   └── web/
 │       └── src/
 │
-├── docs/
-│   ├── screenshots/
-│   ├── research-note.md
-│   └── design-note.md
 │
 ├── AI_USAGE.md
 ├── README.md
+├── design.md
+├── research.md
 └── docker-compose.yml
 ```
 
