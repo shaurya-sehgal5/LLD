@@ -1,0 +1,25 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: lld-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: lld_user
+      POSTGRES_PASSWORD: lld_password
+      POSTGRES_DB: lld_platform
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lld_user -d lld_platform"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:

@@ -1,0 +1,95 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AttemptStatus {
+  DRAFT
+  SUBMITTED
+  EVALUATING
+  COMPLETED
+  FAILED
+}
+
+enum SubmissionStatus {
+  SUBMITTED
+  VALIDATED
+  INVALID
+}
+
+model Problem {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  attempts    PracticeAttempt[]
+}
+
+model PracticeAttempt {
+  id                String        @id @default(cuid())
+  problemId         String
+  previousAttemptId String?
+  status            AttemptStatus @default(DRAFT)
+  startedAt         DateTime      @default(now())
+  submittedAt       DateTime?
+  completedAt       DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  problem         Problem          @relation(fields: [problemId], references: [id])
+  previousAttempt PracticeAttempt? @relation("AttemptRetry", fields: [previousAttemptId], references: [id])
+  retryAttempts   PracticeAttempt[] @relation("AttemptRetry")
+  submission      Submission?
+}
+
+model Submission {
+  id                         String           @id @default(cuid())
+  attemptId                  String           @unique
+  requirementsAndAssumptions String
+  classesAndInterfaces       String
+  responsibilities          String
+  relationships              String
+  rationale                  String
+  tradeoffs                  String
+  edgeCases                  String
+  codeSnippet                String?
+  status                     SubmissionStatus @default(SUBMITTED)
+  createdAt                  DateTime         @default(now())
+  updatedAt                  DateTime         @updatedAt
+
+  attempt    PracticeAttempt @relation(fields: [attemptId], references: [id])
+  evaluation Evaluation?
+}
+
+model Evaluation {
+  id              String   @id @default(cuid())
+  submissionId    String   @unique
+  overallScore    Float
+  overallSummary  String
+  topImprovements String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  submission Submission       @relation(fields: [submissionId], references: [id])
+  criteria   CriterionResult[]
+}
+
+model CriterionResult {
+  id           String   @id @default(cuid())
+  evaluationId String
+  criterion    String
+  score        Int
+  evidence     String
+  concern      String
+  suggestion   String
+  confidence   Float
+  createdAt    DateTime @default(now())
+
+  evaluation Evaluation @relation(fields: [evaluationId], references: [id])
+}

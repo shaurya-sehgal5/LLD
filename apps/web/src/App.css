@@ -1,0 +1,1059 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap");
+
+:root {
+  --ink: #151515;
+  --muted: #6d6b67;
+  --line: #e5e1da;
+  --paper: #f7f5f0;
+  --white: #ffffff;
+  --accent: #ef6c3e;
+  --accent-dark: #cf4f25;
+  --green: #28784e;
+  --yellow: #b47713;
+  --red: #b84141;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: "DM Sans", sans-serif;
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.topbar {
+  height: 76px;
+  padding: 0 6vw;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(247, 245, 240, 0.96);
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  backdrop-filter: blur(12px);
+}
+
+.brand {
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 0;
+  color: var(--ink);
+  text-align: left;
+}
+
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  background: var(--ink);
+  color: white;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+}
+
+.brand strong {
+  display: block;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 15px;
+}
+
+.brand small {
+  display: block;
+  color: var(--muted);
+  margin-top: 2px;
+  font-size: 11px;
+}
+
+.topbar nav {
+  display: flex;
+  gap: 5px;
+}
+
+.topbar nav button {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.topbar nav button:hover,
+.topbar nav .nav-active {
+  background: #ebe8e1;
+  color: var(--ink);
+}
+
+main {
+  min-height: calc(100vh - 76px);
+}
+
+.page {
+  width: min(1180px, 88vw);
+  margin: 0 auto;
+  padding: 70px 0 100px;
+}
+
+.page.narrow {
+  width: min(1080px, 88vw);
+}
+
+.eyebrow {
+  display: block;
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  min-height: 350px;
+  padding-bottom: 65px;
+  border-bottom: 1px solid var(--line);
+}
+
+.hero h1,
+.detail-header h1,
+.practice-heading h1,
+.feedback-header h1,
+.history-header h1 {
+  font-family: "Space Grotesk", sans-serif;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+  font-size: clamp(42px, 5.2vw, 70px);
+  margin: 17px 0 22px;
+}
+
+.hero p {
+  max-width: 600px;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+.hero-stat {
+  min-width: 170px;
+  padding-left: 30px;
+  border-left: 1px solid var(--line);
+}
+
+.hero-stat strong {
+  display: block;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 48px;
+}
+
+.hero-stat span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  margin: 65px 0 25px;
+}
+
+.section-heading h2 {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 30px;
+  margin: 9px 0 0;
+  letter-spacing: -0.03em;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.problem-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.problem-card {
+  min-height: 275px;
+  padding: 28px;
+  border: 1px solid var(--line);
+  background: var(--white);
+  text-align: left;
+  border-radius: 3px;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.problem-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(40, 35, 25, 0.08);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.problem-number {
+  color: #aaa69e;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 13px;
+}
+
+.difficulty {
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.problem-card h3 {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 27px;
+  letter-spacing: -0.035em;
+  margin: 60px 0 12px;
+}
+
+.problem-card p {
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 14px;
+  margin: 0;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 25px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.arrow {
+  font-size: 18px;
+}
+
+.back-button {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 55px;
+}
+
+.back-button:hover {
+  color: var(--ink);
+}
+
+.detail-header {
+  max-width: 800px;
+  margin-bottom: 55px;
+}
+
+.detail-header h1 {
+  font-size: clamp(45px, 6vw, 75px);
+}
+
+.detail-header p,
+.practice-heading p,
+.feedback-header p,
+.history-header p {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.7;
+  max-width: 700px;
+}
+
+.detail-layout {
+  display: grid;
+  grid-template-columns: 1.65fr 0.8fr;
+  gap: 18px;
+}
+
+.content-card,
+.action-card,
+.field-card,
+.sticky-card,
+.criterion-card,
+.improvement-card {
+  background: var(--white);
+  border: 1px solid var(--line);
+}
+
+.content-card {
+  padding: 40px;
+}
+
+.content-card h2 {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 30px;
+  margin: 13px 0 16px;
+}
+
+.detail-copy {
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 650px;
+}
+
+.principles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 25px;
+  margin-top: 45px;
+}
+
+.principles > div {
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.principles span {
+  color: var(--accent);
+  font-size: 11px;
+}
+
+.principles strong {
+  display: block;
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+.principles p {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.action-card {
+  padding: 30px;
+  align-self: start;
+}
+
+.action-card h3 {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 25px;
+  margin: 13px 0;
+}
+
+.action-card p {
+  color: var(--muted);
+  line-height: 1.6;
+  font-size: 13px;
+  margin-bottom: 30px;
+}
+
+.primary-button,
+.secondary-button,
+.text-button {
+  border-radius: 6px;
+  padding: 13px 17px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.primary-button {
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: white;
+}
+
+.primary-button:hover {
+  background: #2d2d2d;
+}
+
+.primary-button:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
+
+.secondary-button {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: white;
+  color: var(--ink);
+  margin-top: 10px;
+}
+
+.secondary-button:hover {
+  border-color: #bbb6ac;
+}
+
+.text-button {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+}
+
+.practice-page {
+  padding-top: 35px;
+}
+
+.practice-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.practice-top .back-button {
+  margin: 0;
+}
+
+.attempt-indicator {
+  text-align: right;
+}
+
+.attempt-indicator span {
+  display: block;
+  color: var(--muted);
+  font-size: 9px;
+  letter-spacing: 0.13em;
+}
+
+.attempt-indicator strong {
+  font-size: 11px;
+  font-family: monospace;
+}
+
+.practice-heading {
+  margin: 60px 0 45px;
+}
+
+.practice-heading h1 {
+  font-size: 50px;
+}
+
+.form-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 18px;
+  align-items: start;
+}
+
+.form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.field-card {
+  padding: 30px;
+}
+
+.field-heading {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.field-heading > span {
+  color: var(--accent);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 12px;
+}
+
+.field-heading h3 {
+  margin: 0 0 5px;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 17px;
+}
+
+.field-heading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+textarea {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 15px;
+  outline: none;
+  color: var(--ink);
+  background: #fcfbf9;
+  line-height: 1.65;
+  font-size: 13px;
+}
+
+textarea:focus {
+  border-color: #aaa49a;
+  background: white;
+}
+
+.character-count {
+  color: #99958d;
+  text-align: right;
+  margin-top: 7px;
+  font-size: 10px;
+}
+
+.code-area {
+  font-family: monospace;
+}
+
+.sticky-card {
+  padding: 25px;
+  position: sticky;
+  top: 100px;
+}
+
+.checklist {
+  margin: 25px 0;
+}
+
+.checklist > div {
+  display: flex;
+  align-items: start;
+  gap: 10px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.checklist span {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.checklist p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.sidebar-note {
+  margin-top: 25px;
+  padding: 15px;
+  background: #f6f2eb;
+}
+
+.sidebar-note strong {
+  font-size: 11px;
+}
+
+.sidebar-note p {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.55;
+  margin-bottom: 0;
+}
+
+.submit-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  background: var(--ink);
+  color: white;
+  padding: 25px;
+  margin-top: 5px;
+}
+
+.submit-panel strong {
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.submit-panel p {
+  color: #aaa;
+  font-size: 11px;
+  margin: 5px 0 0;
+}
+
+.submit-panel .primary-button {
+  background: white;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.feedback-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 40px;
+}
+
+.feedback-header h1 {
+  font-size: 54px;
+  margin-bottom: 15px;
+}
+
+.overall-score {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background: white;
+}
+
+.overall-score strong {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 45px;
+  line-height: 1;
+}
+
+.overall-score span {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.score-good {
+  color: var(--green);
+}
+
+.score-mid {
+  color: var(--yellow);
+}
+
+.score-low {
+  color: var(--red);
+}
+
+.feedback-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 25px 0 35px;
+}
+
+.feedback-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.criterion-card {
+  padding: 27px;
+}
+
+.criterion-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.criterion-score {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  font-size: 17px;
+}
+
+.feedback-section {
+  padding-top: 18px;
+}
+
+.feedback-section > span {
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+  color: #8c8880;
+  text-transform: uppercase;
+}
+
+.feedback-section p {
+  color: #4d4a45;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 7px 0 0;
+}
+
+.feedback-section.concern {
+  border-left: 2px solid #e4c4a3;
+  padding-left: 12px;
+}
+
+.feedback-section.suggestion {
+  border-left: 2px solid #b5d6c1;
+  padding-left: 12px;
+}
+
+.confidence {
+  margin-top: 20px;
+  color: #aaa69f;
+  font-size: 10px;
+}
+
+.improvement-card {
+  padding: 30px;
+  margin-top: 15px;
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 25px;
+}
+
+.improvement-card h2 {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 25px;
+  margin: 10px 0;
+}
+
+.improvement-card ol {
+  margin: 0;
+  padding-left: 22px;
+}
+
+.improvement-card li {
+  padding: 8px 0;
+  color: #4d4a45;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.completion-note {
+  display: flex;
+  gap: 13px;
+  align-items: start;
+  margin-top: 20px;
+  padding: 20px;
+  background: #edf5ef;
+  color: var(--green);
+}
+
+.completion-note > span {
+  font-size: 18px;
+}
+
+.completion-note strong {
+  font-size: 12px;
+}
+
+.completion-note p {
+  color: #52705e;
+  margin: 5px 0 0;
+  font-size: 11px;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 40px;
+  margin-bottom: 50px;
+}
+
+.history-header h1 {
+  font-size: 58px;
+}
+
+.history-stats {
+  display: flex;
+  gap: 30px;
+  align-self: end;
+}
+
+.history-stats div {
+  min-width: 100px;
+  padding-left: 20px;
+  border-left: 1px solid var(--line);
+}
+
+.history-stats strong {
+  display: block;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 30px;
+}
+
+.history-stats span {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.history-list {
+  border-top: 1px solid var(--line);
+}
+
+.history-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 60px 1fr 150px 80px 20px;
+  align-items: center;
+  gap: 15px;
+  padding: 22px 5px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+.history-row:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.history-number {
+  color: #aaa69e;
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.history-main strong {
+  display: block;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 14px;
+}
+
+.history-main span {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  margin-top: 4px;
+}
+
+.history-status {
+  color: var(--muted);
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  display: inline-block;
+  border-radius: 50%;
+  background: #aaa;
+}
+
+.status-dot.completed {
+  background: var(--green);
+}
+
+.status-dot.failed {
+  background: var(--red);
+}
+
+.status-dot.draft {
+  background: var(--yellow);
+}
+
+.history-score {
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+}
+
+.history-arrow {
+  font-size: 17px;
+  color: var(--muted);
+}
+
+.empty-state {
+  border: 1px dashed #cfc9bf;
+  padding: 55px;
+  text-align: center;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.empty-state strong {
+  display: block;
+  color: var(--ink);
+  margin-bottom: 5px;
+}
+
+.empty-state p {
+  font-size: 12px;
+}
+
+.error-banner {
+  position: fixed;
+  top: 90px;
+  right: 25px;
+  z-index: 50;
+  max-width: 430px;
+  background: #fff1ef;
+  border: 1px solid #efc7c0;
+  color: var(--red);
+  padding: 13px 15px;
+  border-radius: 5px;
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  font-size: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.error-banner button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 18px;
+}
+
+.loading-bar {
+  position: fixed;
+  top: 75px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 100;
+  overflow: hidden;
+}
+
+.loading-bar span {
+  display: block;
+  height: 100%;
+  width: 40%;
+  background: var(--accent);
+  animation: loading 1s infinite ease-in-out;
+}
+
+@keyframes loading {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  100% {
+    transform: translateX(350%);
+  }
+}
+
+@media (max-width: 850px) {
+  .topbar {
+    padding: 0 5vw;
+  }
+
+  .page {
+    width: 90vw;
+    padding-top: 45px;
+  }
+
+  .hero,
+  .feedback-header,
+  .history-header {
+    display: block;
+  }
+
+  .hero-stat {
+    margin-top: 35px;
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .section-heading {
+    display: block;
+  }
+
+  .section-heading .muted {
+    display: block;
+    margin-top: 12px;
+  }
+
+  .problem-grid,
+  .detail-layout,
+  .form-layout,
+  .feedback-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .practice-sidebar {
+    display: none;
+  }
+
+  .history-stats {
+    margin-top: 30px;
+  }
+
+  .history-row {
+    grid-template-columns: 40px 1fr 70px 20px;
+  }
+
+  .history-status {
+    display: none;
+  }
+
+  .improvement-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 550px) {
+  .topbar {
+    height: 65px;
+  }
+
+  .brand small {
+    display: none;
+  }
+
+  .hero h1,
+  .detail-header h1,
+  .practice-heading h1,
+  .feedback-header h1,
+  .history-header h1 {
+    font-size: 43px;
+  }
+
+  .hero {
+    min-height: auto;
+    padding-bottom: 40px;
+  }
+
+  .problem-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .principles {
+    grid-template-columns: 1fr;
+  }
+
+  .content-card,
+  .field-card {
+    padding: 22px;
+  }
+
+  .submit-panel {
+    display: block;
+  }
+
+  .submit-panel .primary-button {
+    width: 100%;
+    margin-top: 18px;
+  }
+
+  .feedback-actions {
+    flex-wrap: wrap;
+  }
+
+  .overall-score {
+    margin-top: 30px;
+  }
+}
