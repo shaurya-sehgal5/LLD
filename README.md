@@ -48,72 +48,31 @@ The application is intentionally implemented as a simple monolith. HTTP routes d
 
 ```mermaid
 flowchart TB
-    subgraph FE[React Frontend]
-        direction LR
-        F1[Problems]
-        F2[Practice]
-        F3[Feedback]
-        F4[History]
-    end
+    classDef layer fill:#f4f4f5,stroke:#52525b,color:#18181b;
+    classDef db fill:#eef2ff,stroke:#4338ca,color:#1e1b4b;
 
-    subgraph API[Express REST API]
-        direction LR
-        R1[Problem Routes]
-        R2[Attempt Routes]
-    end
+    FE["React Frontend<br/>Problems • Practice • Feedback • History"]
+    API["Express REST API<br/>Problem Routes • Attempt Routes"]
+    APP["Application Layer<br/>CreateAttempt • SubmitAttempt • EvaluateSubmission<br/>RetryAttempt • GetProblemHistory"]
+    DOM["Domain Layer<br/>PracticeAttempt • Submission • Domain Rules • State Transitions"]
+    EVAL{{Evaluator Interface}}
+    E1[RuleBasedEvaluator]
+    E2[OpenAIEvaluator - optional]
+    REPO["Repository Interfaces<br/>Problem • Attempt • Submission • Evaluation"]
+    DB[(PostgreSQL)]
 
-    subgraph APP[Application Layer]
-        direction LR
-        A1[CreateAttempt]
-        A2[SubmitAttempt]
-        A3[EvaluateSubmission]
-        A4[RetryAttempt]
-        A5[GetProblemHistory]
-    end
-
-    subgraph DOM[Domain Layer]
-        direction LR
-        D1[PracticeAttempt]
-        D2[Submission]
-        D3[Domain Rules]
-        D4[State Transitions]
-    end
-
-    subgraph EVAL[Evaluator]
-        direction LR
-        E0{{Evaluator Interface}}
-        E1[RuleBasedEvaluator]
-        E2[OpenAIEvaluator - optional]
-        E0 --> E1
-        E0 --> E2
-    end
-
-    subgraph REPO[Repository Interfaces]
-        direction LR
-        RP1[ProblemRepository]
-        RP2[AttemptRepository]
-        RP3[SubmissionRepository]
-        RP4[EvaluationRepository]
-    end
-
-    subgraph DB[PostgreSQL]
-        direction LR
-        DB1[(Problem)]
-        DB2[(PracticeAttempt)]
-        DB3[(Submission)]
-        DB4[(Evaluation)]
-        DB5[(CriterionResult)]
-    end
-
-    FE -->|HTTP / JSON| API
-    API --> APP
+    FE -->|HTTP / JSON| API --> APP
     APP --> DOM
     APP --> EVAL
-    DOM --> REPO
-    REPO --> DB
+    EVAL --> E1
+    EVAL --> E2
+    DOM --> REPO --> DB
+
+    class FE,API,APP,DOM,EVAL,REPO layer;
+    class DB db;
 ```
 
-**Figure 1 — High-level architecture.** The MVP uses a simple layered monolith. HTTP routes delegate to application use cases, which coordinate domain behavior, repositories, and evaluation. Infrastructure details such as PostgreSQL and evaluator implementations remain behind interfaces.
+**Figure 1 — High-level architecture.** Requests flow from the frontend through the REST API into the application layer, which coordinates the domain layer and the evaluator abstraction. The domain layer talks only to repository interfaces, which sit in front of PostgreSQL.
 
 ### Backend structure
 
@@ -155,70 +114,29 @@ A learner selects a problem, creates an attempt, submits a structured LLD design
 
 ```mermaid
 flowchart TB
-    subgraph S1[Start]
-        direction LR
-        A([Select Problem])
-        B(["Start Attempt DRAFT"])
-        A --> B
-    end
+    classDef status fill:#f4f4f5,stroke:#52525b,color:#18181b;
 
-    subgraph S2[Design the LLD Solution]
-        direction LR
-        C1[Requirements]
-        C2[Classes and Interfaces]
-        C3[Relationships]
-        C4[Trade-offs]
-        C5[Edge Cases]
-    end
+    A([Select Problem]) --> B(["Start Attempt: DRAFT"])
+    B --> C["Design the LLD Solution<br/>Requirements • Classes & Interfaces • Relationships<br/>Trade-offs • Edge Cases"]
+    C -->|Submit| D{Validate Submission}
+    D -->|Invalid| X[Show validation errors]
+    X -.retry.-> C
+    D -->|Valid| E(["SUBMITTED"])
+    E --> F{{Evaluator Interface}}
+    F --> G1[RuleBasedEvaluator]
+    F --> G2[OpenAIEvaluator]
+    G1 --> H["Feedback<br/>Score • Evidence • Concerns • Suggestions • Confidence"]
+    G2 --> H
+    H --> I(["COMPLETED"])
+    I --> J1[View Feedback]
+    I --> J2[View History]
+    I --> J3(["Retry"])
+    J3 -.new attempt.-> A
 
-    subgraph S3[Deterministic Validation]
-        direction LR
-        D{Validate Submission}
-        X[Show validation errors]
-        D -->|Invalid| X
-    end
-
-    subgraph S4[Evaluation]
-        direction LR
-        E(["SUBMITTED"])
-        F{{Evaluator Interface}}
-        G1[RuleBasedEvaluator]
-        G2[OpenAIEvaluator]
-        E --> F
-        F --> G1
-        F --> G2
-    end
-
-    subgraph S5[Feedback]
-        direction LR
-        H1[Score]
-        H2[Evidence]
-        H3[Concerns]
-        H4[Suggestions]
-        H5[Confidence]
-    end
-
-    subgraph S6[Outcome]
-        direction LR
-        I(["COMPLETED"])
-        J1[View Feedback]
-        J2[View History]
-        J3(["Retry"])
-        I --> J1
-        I --> J2
-        I --> J3
-    end
-
-    S1 --> S2
-    S2 -->|Submit| S3
-    S3 -->|Valid| S4
-    S4 --> S5
-    S5 --> S6
-    X -.retry.-> S2
-    J3 -.new attempt.-> S1
+    class B,E,I,J3 status;
 ```
 
-**Figure 2 — Core practice loop.** A learner selects a problem, creates an attempt, submits a structured LLD design, passes deterministic validation, receives structured evaluation feedback, and can review history or retry.
+**Figure 2 — Core practice loop.** A learner selects a problem, submits a structured design, passes validation, gets evaluated behind the evaluator interface, and either reviews feedback/history or retries into a new attempt.
 
 ---
 
@@ -267,7 +185,7 @@ flowchart LR
     RES --> P[("Persist Evaluation")]
 ```
 
-**Figure 5 — Evaluation architecture.** Deterministic validation is separated from judgment-heavy evaluation. The evaluator is defined behind an interface so the practice flow does not depend directly on a particular evaluation strategy. The current MVP can run with the rule-based evaluator while the OpenAI evaluator remains an optional implementation.
+**Figure 5 — Evaluation architecture.** Deterministic validation is separated from judgment-heavy evaluation. The evaluator is defined behind an interface so the practice flow does not depend directly on a particular evaluation strategy.
 
 > **Note:** the current development environment does not have available OpenAI API quota, so runtime evaluation uses `RuleBasedEvaluator` only. No fake AI-generated evaluation is ever shown to the user. See [`AI_USAGE.md`](./AI_USAGE.md) for details.
 
@@ -652,6 +570,81 @@ flowchart LR
 
 ---
 
+## 9. Screenshots
+
+Four screenshots walk through one full loop of the product: pick a problem, design it, get scored feedback, then see the score improve on retry.
+
+### Screenshot 1 — Problems
+
+The problem list, showing the four available LLD problems.
+
+```
+LLD Practice Platform
+
+Vending Machine
+Parking Lot
+Library Management
+Elevator System
+```
+
+![Problems screen](./screenshots/problems.png)
+
+### Screenshot 2 — Practice
+
+The structured submission form (Vending Machine example), with every design section visible:
+
+```
+Requirements & Assumptions
+Classes & Interfaces
+Responsibilities
+Relationships
+Rationale
+Trade-offs
+Edge Cases
+Code Snippet (optional)
+```
+
+![Practice screen](./screenshots/practice.png)
+
+### Screenshot 3 — Feedback
+
+The most important screenshot — it's the one that proves the product's core hypothesis: that criterion-level, evidence-backed feedback is more useful than a bare score.
+
+```
+Overall Score: 6.8 / 10
+
+Requirements          5/10
+  Evidence: ...
+  Concern: ...
+  Suggestion: ...
+
+Responsibilities      9/10
+  Evidence: ...
+  Concern: ...
+  Suggestion: ...
+
+...
+```
+
+![Feedback screen](./screenshots/eval.png)
+
+### Screenshot 4 — History
+
+Multiple attempts on the same problem, showing the score trend and the retry action — proof of the improvement loop.
+
+```
+Vending Machine
+
+Attempt #2      7.3 / 10
+Attempt #1      6.8 / 10
+
+[ Retry ]
+```
+
+![History screen](./screenshots/progress.png)
+
+---
+
 ## Project structure
 
 ```text
@@ -666,6 +659,7 @@ lld-practice-platform/
 │       └── src/
 │
 ├── docs/
+│   ├── screenshots/
 │   ├── research-note.md
 │   └── design-note.md
 │
