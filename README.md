@@ -47,8 +47,9 @@ Each problem provides context that the learner uses to create their own design.
 The application is intentionally implemented as a simple monolith. HTTP routes delegate to application use cases, which coordinate domain behavior, repositories, and evaluation. Infrastructure details such as PostgreSQL and evaluator implementations remain behind interfaces.
 
 ```mermaid
-flowchart LR
+flowchart TB
     subgraph FE[React Frontend]
+        direction LR
         F1[Problems]
         F2[Practice]
         F3[Feedback]
@@ -56,11 +57,13 @@ flowchart LR
     end
 
     subgraph API[Express REST API]
+        direction LR
         R1[Problem Routes]
         R2[Attempt Routes]
     end
 
     subgraph APP[Application Layer]
+        direction LR
         A1[CreateAttempt]
         A2[SubmitAttempt]
         A3[EvaluateSubmission]
@@ -69,6 +72,7 @@ flowchart LR
     end
 
     subgraph DOM[Domain Layer]
+        direction LR
         D1[PracticeAttempt]
         D2[Submission]
         D3[Domain Rules]
@@ -76,6 +80,7 @@ flowchart LR
     end
 
     subgraph EVAL[Evaluator]
+        direction LR
         E0{{Evaluator Interface}}
         E1[RuleBasedEvaluator]
         E2[OpenAIEvaluator - optional]
@@ -84,6 +89,7 @@ flowchart LR
     end
 
     subgraph REPO[Repository Interfaces]
+        direction LR
         RP1[ProblemRepository]
         RP2[AttemptRepository]
         RP3[SubmissionRepository]
@@ -91,6 +97,7 @@ flowchart LR
     end
 
     subgraph DB[PostgreSQL]
+        direction LR
         DB1[(Problem)]
         DB2[(PracticeAttempt)]
         DB3[(Submission)]
@@ -98,7 +105,7 @@ flowchart LR
         DB5[(CriterionResult)]
     end
 
-    FE -- HTTP / JSON --> API
+    FE -->|HTTP / JSON| API
     API --> APP
     APP --> DOM
     APP --> EVAL
@@ -147,23 +154,68 @@ Evaluators abstract submission evaluation.
 A learner selects a problem, creates an attempt, submits a structured LLD design, passes deterministic validation, receives structured evaluation feedback, and can review history or retry.
 
 ```mermaid
-flowchart LR
-    A([Select Problem]) --> B(["Start Attempt (DRAFT)"])
-    B --> C["Design LLD Solution:<br/>Requirements, Classes,<br/>Relations, Trade-offs, Edge Cases"]
-    C -->|Submit| D{Deterministic Validation}
-    D -->|Invalid| X[Show validation errors]
-    X -.retry.-> C
-    D -->|Valid| E(["SUBMITTED"])
-    E --> F{{Evaluator Interface}}
-    F --> G1[RuleBasedEvaluator]
-    F --> G2[OpenAIEvaluator]
-    G1 --> H["Structured Feedback:<br/>Score, Evidence,<br/>Concerns, Suggestions, Confidence"]
-    G2 --> H
-    H --> I(["COMPLETED"])
-    I --> J1[View Feedback]
-    I --> J2[View History]
-    I --> J3(["Retry"])
-    J3 -.new attempt.-> B
+flowchart TB
+    subgraph S1[Start]
+        direction LR
+        A([Select Problem])
+        B(["Start Attempt DRAFT"])
+        A --> B
+    end
+
+    subgraph S2[Design the LLD Solution]
+        direction LR
+        C1[Requirements]
+        C2[Classes and Interfaces]
+        C3[Relationships]
+        C4[Trade-offs]
+        C5[Edge Cases]
+    end
+
+    subgraph S3[Deterministic Validation]
+        direction LR
+        D{Validate Submission}
+        X[Show validation errors]
+        D -->|Invalid| X
+    end
+
+    subgraph S4[Evaluation]
+        direction LR
+        E(["SUBMITTED"])
+        F{{Evaluator Interface}}
+        G1[RuleBasedEvaluator]
+        G2[OpenAIEvaluator]
+        E --> F
+        F --> G1
+        F --> G2
+    end
+
+    subgraph S5[Feedback]
+        direction LR
+        H1[Score]
+        H2[Evidence]
+        H3[Concerns]
+        H4[Suggestions]
+        H5[Confidence]
+    end
+
+    subgraph S6[Outcome]
+        direction LR
+        I(["COMPLETED"])
+        J1[View Feedback]
+        J2[View History]
+        J3(["Retry"])
+        I --> J1
+        I --> J2
+        I --> J3
+    end
+
+    S1 --> S2
+    S2 -->|Submit| S3
+    S3 -->|Valid| S4
+    S4 --> S5
+    S5 --> S6
+    X -.retry.-> S2
+    J3 -.new attempt.-> S1
 ```
 
 **Figure 2 — Core practice loop.** A learner selects a problem, creates an attempt, submits a structured LLD design, passes deterministic validation, receives structured evaluation feedback, and can review history or retry.
